@@ -131,6 +131,10 @@ int ripLastItemOff(Circle* circle) {
     return item;
 }
 
+void printCircle(Circle* circle) {
+    
+}
+
 int main() {
 
 }
