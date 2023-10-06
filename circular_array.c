@@ -1,20 +1,6 @@
 #include <stdio.h>
-#include <stdlib.h>
+#include "circular_array.h"
 
-//Contains a head and tail int, a size_t length
-//
-//and a pointer to a (heap-assumed) array.
-typedef struct {
-    int* array;
-    int head;
-    int tail;
-    size_t capacity;
-    size_t length;
-} Circle;
-
-//When a circle is full, that means that items have
-//
-//been added until the tail came right by the head.
 int is_circ_full(Circle* circle) {
     return circle->head == (circle->tail + 1) % circle->capacity;
 }
@@ -183,59 +169,4 @@ void printArray(Circle* circle) {
 //Sister function to peekCircle(). Prints the tail with its index.
 void printTail(Circle* circle) {
     printf("%d: %d", circle->tail, circle->array[circle->tail]);
-}
-
-int main() {
-    // Test doubleCircleCapacity
-    Circle* circle1 = initCircle(4);
-    circle1 = doubleCircleCapacity(circle1);
-    enqueueItem(circle1, 1);
-    printCircle(circle1);
-
-    // Test emptyCircle
-    Circle* circle2 = initCircle(4);
-    enqueueItem(circle2, 1);
-    enqueueItem(circle2, 2);
-    emptyCircle(circle2);
-    printCircle(circle2);
-
-    // Test nukeCircle
-    Circle* circle3 = initCircle(4);
-    enqueueItem(circle3, 1);
-    nukeCircle(circle3);
-    printCircle(circle3);
-
-    // Test enqueueItemSafe
-    Circle* circle4 = initCircle(4);
-    for (int i = 1; i <= 5; i++) {
-        circle4 = enqueueItemSafe(circle4, i);
-    }
-    printCircle(circle4);
-
-    // Test peekCircle
-    Circle* circle5 = initCircle(4);
-    enqueueItem(circle5, 1);
-    enqueueItem(circle5, 2);
-    printf("Peeked: %d\n", peekCircle(circle5));
-
-    // Test ripLastItemOff
-    Circle* circle6 = initCircle(4);
-    enqueueItem(circle6, 1);
-    enqueueItem(circle6, 2);
-    enqueueItem(circle6, 3);
-    enqueueItem(circle6, 4);
-    printCircle(circle6);
-    int removed = ripLastItemOff(circle6);
-    printf("Removed: %d\n", removed);
-    printCircle(circle6);
-
-    // Free memory
-    free(circle1);
-    free(circle2);
-    free(circle3);
-    free(circle4);
-    free(circle5);
-    free(circle6);
-
-    return 0;
 }
