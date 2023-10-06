@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 
 //Contains a head and tail int, a size_t length
 //
@@ -34,19 +35,49 @@ Circle* initCircle(size_t size) {
     return circle;
 }
 
+//Prints the contents together with markers for head and tail.
+void printCircle(Circle* circle) {
+    int cap = circle->capacity;
+    int* array = circle->array;
+    int head = circle->head;
+    int tail = circle->tail;
+    printf("[");
+    for (int i = 0; i < cap; i++) {
+        if (is_circ_empty(circle)) {
+            break;
+        }
+        if (i == head) {
+            printf("<");
+        }
+        printf("%d", array[i]);
+        if (i == tail) {
+            printf(">");
+        }
+        if (i + 1 < cap) {
+            printf(", ");
+        }
+    }
+    printf("]\n");
+}
+
 //Specialized function that doubles the size of the circle.
+//
+//Returns a pointer to a new array and frees the old one.
 Circle* doubleCircleCapacity(Circle* circle) {
+    printCircle(circle);
     Circle* newCircle = initCircle(circle->capacity * 2);
+    printCircle(newCircle);
     int copyFrom = circle->head;
     int copyTo = -1;
 
     do {
-        newCircle->array[copyTo++] = circle->head;
+        newCircle->array[copyTo++] = circle->array[copyFrom];
         copyFrom = (copyFrom + 1) % circle->capacity;
     } while (copyFrom != circle->head);
 
     newCircle->head = 0;
     newCircle->tail = circle->capacity - 1;
+    free(circle);
     return newCircle;
 }
 
@@ -116,6 +147,7 @@ int dequeueItem(Circle* circle) {
     if (circle->head == circle->tail) {
         emptyCircle(circle);
     } else {
+        circle->array[circle->head] = 0;
         circle->head = (circle->head + 1) % circle->capacity;
         circle->length--;
     }
@@ -126,15 +158,76 @@ int dequeueItem(Circle* circle) {
 //item. Has no error handling cuz I can't be bothered anymore.
 int ripLastItemOff(Circle* circle) {
     int item = circle->head;
+    circle->array[circle->head] = 0;
     circle->head = (circle->head + 1) % circle->capacity;
     circle->length--;
     return item;
 }
 
-void printCircle(Circle* circle) {
-    
+//Raw print array function. Prints the content of the allocation.
+void printArray(Circle* circle) {
+    printf("[");
+    for (int i = 0; i < circle->capacity; i++) {
+        printf("%d", circle->array[i]);
+        if (i < circle->capacity - 1) {
+            printf(", ");
+        }
+    }
+    printf("]\n");
+}
+
+//Sister function to peekCircle(). Prints the tail with its index.
+void printTail(Circle* circle) {
+    printf("%d: %d", circle->tail, circle->array[circle->tail]);
 }
 
 int main() {
+    // Test doubleCircleCapacity
+    Circle* circle1 = initCircle(4);
+    circle1 = doubleCircleCapacity(circle1);
+    /*printCircle(circle1);
 
+    // Test emptyCircle
+    Circle* circle2 = initCircle(4);
+    enqueueItem(circle2, 1);
+    enqueueItem(circle2, 2);
+    emptyCircle(circle2);
+    printCircle(circle2);
+
+    // Test nukeCircle
+    Circle* circle3 = initCircle(4);
+    enqueueItem(circle3, 1);
+    nukeCircle(circle3);
+    printCircle(circle3);
+
+    // Test enqueueItemSafe
+    Circle* circle4 = initCircle(4);
+    for (int i = 1; i <= 4; i++) {
+        enqueueItemSafe(circle4, i);
+    }
+    printCircle(circle4);
+
+    // Test peekCircle
+    Circle* circle5 = initCircle(4);
+    enqueueItem(circle5, 1);
+    enqueueItem(circle5, 2);
+    printf("Peeked: %d\n", peekCircle(circle5));
+
+    // Test ripLastItemOff
+    Circle* circle6 = initCircle(4);
+    enqueueItem(circle6, 1);
+    enqueueItem(circle6, 2);
+    int removed = ripLastItemOff(circle6);
+    printf("Removed: %d\n", removed);
+    printCircle(circle6);
+
+    // Free memory*/
+    free(circle1);
+    /*free(circle2);
+    free(circle3);
+    free(circle4);
+    free(circle5);
+    free(circle6);*/
+
+    return 0;
 }
